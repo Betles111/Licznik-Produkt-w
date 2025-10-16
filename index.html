@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Licznik produktów – tryb klienta i edycji</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 40px;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 40px;
+    }
+    .product {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      width: 280px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .product img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+    }
+    .counter {
+      font-size: 48px;
+      font-weight: bold;
+      color: #0078D7;
+      margin: 20px 0;
+    }
+    button {
+      font-size: 24px;
+      margin: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      background-color: #0078D7;
+      color: white;
+    }
+    button:hover {
+      background-color: #005fa3;
+    }
+    input[type="number"] {
+      font-size: 20px;
+      padding: 5px;
+      width: 80px;
+      text-align: center;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+    #panelAdmin {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Licznik produktów</h1>
+
+  <!-- Panel admina -->
+  <div id="panelAdmin">
+    <button id="adminLogin">🔐 Tryb edycji</button>
+    <button id="adminLogout" style="display:none;">🚪 Wyloguj</button>
+  </div>
+
+  <div class="container">
+    <!-- PRODUKT 1 -->
+    <div class="product">
+      <img src="NK białe.png" alt="Produkt">
+      <h3>Produkt 1</h3>
+      <div class="counter" id="licznik1">0</div>
+      <div class="buttons" id="buttons1" style="display:none;">
+        <button onclick="zmienLiczbe(1, 'licznik1')">+</button>
+        <button onclick="zmienLiczbe(-1, 'licznik1')">−</button><br>
+        <input type="number" id="input1" min="0" placeholder="Wpisz ilość">
+        <button onclick="ustawLiczbe('licznik1','input1')">Ustaw</button>
+      </div>
+    </div>
+
+    <!-- PRODUKT 2 -->
+    <div class="product">
+      <img src="NK czarne.png" alt="Produkt">
+      <h3>Produkt 2</h3>
+      <div class="counter" id="licznik2">0</div>
+      <div class="buttons" id="buttons2" style="display:none;">
+        <button onclick="zmienLiczbe(1, 'licznik2')">+</button>
+        <button onclick="zmienLiczbe(-1, 'licznik2')">−</button><br>
+        <input type="number" id="input2" min="0" placeholder="Wpisz ilość">
+        <button onclick="ustawLiczbe('licznik2','input2')">Ustaw</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const liczniki = ['licznik1', 'licznik2'];
+    const haslo = "Erni1705."; // 🔑 ZMIEŃ NA SWOJE HASŁO
+
+    // Wczytaj poprzednie wartości
+    liczniki.forEach(id => {
+      const wartosc = parseInt(localStorage.getItem(id)) || 0;
+      document.getElementById(id).textContent = wartosc;
+    });
+
+    // Zwiększanie / zmniejszanie liczby
+    function zmienLiczbe(krok, id) {
+      let liczba = parseInt(document.getElementById(id).textContent);
+      liczba += krok;
+      if (liczba < 0) liczba = 0;
+      document.getElementById(id).textContent = liczba;
+      localStorage.setItem(id, liczba);
+    }
+
+    // Ustawienie liczby ręcznie
+    function ustawLiczbe(idLicznik, idInput) {
+      const wartosc = parseInt(document.getElementById(idInput).value);
+      if (!isNaN(wartosc) && wartosc >= 0) {
+        document.getElementById(idLicznik).textContent = wartosc;
+        localStorage.setItem(idLicznik, wartosc);
+      } else {
+        alert("Podaj prawidłową liczbę (0 lub więcej).");
+      }
+    }
+
+    // Tryb administratora
+    const btnLogin = document.getElementById('adminLogin');
+    const btnLogout = document.getElementById('adminLogout');
+
+    btnLogin.onclick = function() {
+      const wpisane = prompt("Podaj hasło administratora:");
+      if (wpisane === haslo) {
+        alert("Zalogowano! Możesz edytować liczby.");
+        pokazPrzyciski(true);
+        btnLogin.style.display = "none";
+        btnLogout.style.display = "inline-block";
+      } else {
+        alert("Nieprawidłowe hasło.");
+      }
+    }
+
+    btnLogout.onclick = function() {
+      pokazPrzyciski(false);
+      btnLogin.style.display = "inline-block";
+      btnLogout.style.display = "none";
+    }
+
+    function pokazPrzyciski(pokaz) {
+      liczniki.forEach((id, i) => {
+        document.getElementById(`buttons${i+1}`).style.display = pokaz ? "block" : "none";
+      });
+    }
+  </script>
+</body>
+</html>
